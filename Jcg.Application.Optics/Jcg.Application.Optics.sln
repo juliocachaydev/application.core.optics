@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jcg.Application.Optics", "Jcg.Application.Optics\Jcg.Application.Optics.csproj", "{EB1680EA-0B4E-4BA3-9266-C717BA10401E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jcg.Application.Optics.Tests", "Jcg.Application.Optics.Tests\Jcg.Application.Optics.Tests.csproj", "{2CD055DD-2E82-44D2-A8E9-366224EE41AB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB1680EA-0B4E-4BA3-9266-C717BA10401E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB1680EA-0B4E-4BA3-9266-C717BA10401E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB1680EA-0B4E-4BA3-9266-C717BA10401E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB1680EA-0B4E-4BA3-9266-C717BA10401E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CD055DD-2E82-44D2-A8E9-366224EE41AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CD055DD-2E82-44D2-A8E9-366224EE41AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CD055DD-2E82-44D2-A8E9-366224EE41AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CD055DD-2E82-44D2-A8E9-366224EE41AB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
