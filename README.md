@@ -38,168 +38,176 @@ You can:
 
 There is no limit to the depth of the nested objects.
 
-## Example
+## Examples 
+### Basic Example (single lens, no nesting)
 
-We will use the
-following [Customer class](https://github.com/juliocachaydev/application.core.optics/blob/main/Jcg.Application.Core.Optics/Jcg.Application.Core.Optics.Tests/TestCommon/Models/Customer.cs)
-for the examples. Here that class is shown as JSON for clarity:
 
-```json 
+```csharp
+Customer customer = new CustomerBuilder().Build();
+
+// Customer is a record so we can use non-destructive mutation to create a new
+// instance with a different name
+customer = customer with
 {
-  "CustomerId": "b1a2c3d4-e5f6-7890-abcd-1234567890ef",
-  "CustomerName": "Customer_b1a2c3d4e5f67890abcd1234567890ef",
-  "ContactInfo": {
-    "Address": {
-      "Street": "Market Street"
-    }
-  },
-  "Orders": [
-    {
-      "OrderId": "c0ffee12-3456-7890-abcd-1234567890ab",
-      "Number": 11111,
-      "Items": [
-        {
-          "ProductName": "Bolts",
-          "Quantity": 100,
-          "Price": 10.0
-        }
-      ]
-    }
-  ]
-}
+    CustomerName = "Tom"
+};
+
+// {
+//   "CustomerId": "f7a9b2c1-4d3e-4a5b-8c2d-1e2f3a4b5c6",
+//   "CustomerName": "Tom",
+//   "ContactInfo": {...}
+// }
+
+// Using named parameters for clarity
+ILens<Customer, string> customerNameLens = customer.CreateLens(
+    getter: c => c.CustomerName,
+    setter: (c, name) => c with { CustomerName = name }
+);
+
+// Initially, the Lens.RootObject is the customer instance.
+Assert.Same(customer, customerNameLens.RootObject);
+
+// You can set the name using the value property, like it was a simple {get; set;} property.
+customerNameLens.Value = "George";
+
+// Under the hood, this creates a new instance of the customer available through the Lens.RootObject.
+Assert.NotSame(customer, customerNameLens.RootObject);
+
+// As expected, that new instance has the updated name.
+Assert.Equal("George", customerNameLens.Value);
 ```
 
-We will also use
-a [Customer Builder](https://github.com/juliocachaydev/application.core.optics/blob/main/Jcg.Application.Core.Optics/Jcg.Application.Core.Optics.Tests/TestCommon/Models/CustomerBuilder.cs)
-to facilitate configuring the Customer object for the examples.
-
-### Example 1: Set the Customer.ContactInfo.Address.Street to "Main Street"
-
-The following is a simple example to show the basic functionality.
-
-```csharp
-[Fact]
-    public void CanOperateOnNestedProperty()
-    {
-        // ***** ARRANGE *****
-
-        var customer = Customer.Random;
-
-        // Each lens has a getter and a setter.
-        var customerContactAddressStreetLens = customer
-            .CreateLens(
-                 cust => cust.ContactInfo, // getter
-                (cust, contactInf) => cust with { ContactInfo = contactInf } // setter
-                 )   
-            .FocusLens(
-                contactInfo => contactInfo.Address, // getter
-                (contactInf, addr) => contactInf with { Address = addr } // setter
-                )
-            .FocusLens(
-                address => address.Street, // getter
-                (add, street) => add with { Street = street } // setter
-                );
-
-        // ***** ACT *****
-
-        // The focused value is exposed as a property with a geter and a setter, like if it was a POCO object.
-        // This abstraction makes it easy to work with the nested property.
-        customerContactAddressStreetLens.Value = "Elm Street";
-
-        // ***** ASSERT *****
-
-        // The updated object is always available in the RootObject property
-        Assert.Equal("Elm Street", customerContactAddressStreetLens.RootObject.ContactInfo.Address.Street);
-        Assert.Equal("Elm Street", customerContactAddressStreetLens. Value);
-    }
-```
-
-### Example 2: Add a new Order to the Customer
-
-Here, a more complex use case. Adding an order to the Customer.Orders collection.
-
-Keep in mind that we are not mutating the original object, but creating a new one with the updated collection.
-
-```csharp
-[Fact]
-    public void CanAddItemToNestedCollection()
-    {
-        // ***** ARRANGE *****
-
-        var customer = new CustomerBuilder()
-            .AddOrder(out var order1)
-            .AddOrder(out var order2)
-            .Build();
-
-        var customerOrdersLens = customer
-            .CreateLens(
-                 cust => cust.Orders, // getter
-                (cust, orders) => cust with { Orders = orders } // setter
-                );
-
-        // ***** ACT *****
-
-        // AddWhenDoesNotExists is one of the extension methods to facilitate operations on lenses whose value are IEnumerable<T>
-        customerOrdersLens.AddWhenDoesNotExists(order => order.Number == 11111,
-            () => new Order
-            {
-                OrderId = Guid.NewGuid(),
-                Number = 11111,
-                Items = []
-            });
-
-        // ***** ASSERT *****
-
-        Assert.Equal(3, customerOrdersLens.RootObject.Orders.Count());
-        Assert.Contains(customerOrdersLens.RootObject.Orders, o => o.Number == 11111);
-    }
-```
-
-### Example 3: Focus on a deeply nested collection and update a particular object property value
-
-In this example, our Customer has an order that includes an item. We will update the item's product name.
+### Example 2: Nested lens focusing on a deeply nested property 
 
 ```csharp 
-[Fact]
-    public void CanUpdateItemFromDeeplyNestedCollection()
-    {
-        // ***** ARRANGE *****
-
-        var customer = new CustomerBuilder()
-            .AddOrder(out var order1)
-            .AddOrderItem(order1, out var line1)
+Customer customerObject = new CustomerBuilder()
             .Build();
-
-        var customerOrderItemsLens = customer
-            .CreateLens(
-                c => c.Orders, // getter
-                (c, ord) => c with { Orders = ord } // setter
+        
+        // Customer is a record so we can use non-destructive mutation to create a new
+        // instance with a different name
+        customerObject = customerObject with
+        {
+            ContactInfo = customerObject.ContactInfo with
+            {
+                Address = customerObject.ContactInfo.Address with
+                {
+                    Street = "Market Street"
+                }
+            }
+        };
+        
+        // {
+        //   "CustomerId": "...",
+        //   "CustomerName": "...",
+        //   "ContactInfo": {
+        //     "Address": {
+        //       "Street": "Market Street" <-- we will update this
+        //     }
+        //   }
+        // }
+        
+        // Using named parameters for clarity
+        ILens<Customer, string> customerContactAddressStreetLens =
+            customerObject
+                // Create a lens that focuses on the ContactInfo property
+                .CreateLens(
+                    getter: customer => customer.ContactInfo,
+                    setter: (customer, contactInfo) => customer with { ContactInfo = contactInfo }
                 )
-            .FocusLens(
-            orders => orders.First(o => o.OrderId == order1.OrderId), // getter
-                (orders, ord) => orders = orders.Select(o =>
-                    o.OrderId == order1.OrderId ? ord : o) // setter
+                // Compose the lens to focus on the ContactInfo.Address property
+                .FocusLens(
+                    getter: contactInfo => contactInfo.Address,
+                    setter: (contactInfo, address) => contactInfo with { Address = address }
                 )
-            .FocusLens(
-            orderOne => orderOne.Items, // getter
-                (orderO, it) => orderO with { Items = it } // setter
+                // Compose the lens to focus on the Address.Street property
+                .FocusLens(
+                    getter: address => address.Street,
+                    setter: (address, street) => address with { Street = street }
                 );
+        
+        // Lets change the street name using the lens
+        customerContactAddressStreetLens.Value = "Elm Street";
+        
+        // Now, the lens.RootObject has the changed value
+        Assert.Equal("Elm Street", customerContactAddressStreetLens.RootObject.ContactInfo.Address.Street);
+        
+        // Keep in mind the original object was not modified
+        Assert.Equal("Market Street", customerObject.ContactInfo.Address.Street);
+```
 
-        // ***** ACT *****
+### Example 3: Nested lens focusing on a collection of objects
 
-        customerOrderItemsLens.UpdateWhenExists(item => item.ProductName == line1.ProductName,
-            item => item with { ProductName = "Bolts" });
+```csharp
+Customer customerObject = new CustomerBuilder()
+    .AddOrder(out var order1)
+    .AddOrderItem(order1, out var orderItem1)
+    .Build();
 
-        // ***** ASSERT *****
+// {
+//   "CustomerId": "...",
+//   "CustomerName": "...",
+//   "ContactInfo": { ... },
+//   "Orders": [
+//     {
+//       "OrderId": "o1a2b3c4-...",
+//       "OrderDate": "2024-06-10T00:00:00Z",
+//       "Items": [
+//         {
+//           "ProductName": "Sample Product",
+//           "Quantity": 1,      // <-- We will update this
+//           "UnitPrice": 9.99   // <-- We will also update this
+//         }
+//       ]
+//     }
+//   ]
+// }
 
-        var resultingOrder = customerOrderItemsLens.RootObject.Orders.First(o => o.OrderId == order1.OrderId);
-
-        Assert.Single(resultingOrder.Items);
-        Assert.Contains(resultingOrder.Items, i => i.ProductName == "Bolts");
+// Focuses on Order1
+var customerOrder1Lens = customerObject.CreateLens(
+    getter: customer => customer.Orders.First(o => o.OrderId == order1.OrderId),
+    setter: (customer, order) => customer with
+    {
+        Orders = customer.Orders.Select(o => o.OrderId == order.OrderId ? order : o)
     }
+);
+
+// Focuses on Order1.Item1
+var order1Item1Lens = customerOrder1Lens.FocusLens(
+    getter: order => order.Items.First(i => i.ProductName == orderItem1.ProductName),
+    setter: (order, orderItem) => order with
+    {
+        Items = order.Items.Select(i => i.ProductName == orderItem.ProductName ? orderItem : i)
+    }
+);
+
+// Compose lenses to focus on multiple properties
+var order1Item1QuantityLens = order1Item1Lens.FocusLens(
+    getter: item => item.Quantity,
+    setter: (item, quantity) => item with { Quantity = quantity }
+);
+
+var order1Item1UnitPriceLens = order1Item1Lens.FocusLens(
+    getter: item => item.Price,
+    setter: (item, price) => item with { Price = price }
+);
+
+// Update the quantity to 300
+order1Item1QuantityLens.Value = 300;
+
+// Update the price to 99.99
+order1Item1UnitPriceLens.Value = 99.99m;
+
+var resultingItem = customerOrder1Lens.RootObject
+    .Orders.First(o => o.OrderId == order1.OrderId)
+    .Items.First(i => i.ProductName == orderItem1.ProductName);
+
+Assert.Equal(300, resultingItem.Quantity);
+Assert.Equal(99.99m, resultingItem.Price);
 ```
 
 ### Other Examples
+
+You can leverage a lens that focuses on a collection to modify that collection.
 
 There are more use cases, you can
 see [in the following test class](https://github.com/juliocachaydev/application.core.optics/blob/main/Jcg.Application.Core.Optics/Jcg.Application.Core.Optics.Tests/LensTests.cs)
