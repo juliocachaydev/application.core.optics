@@ -169,7 +169,6 @@ For instance:
 - Removing items from a deeply nested collection.
 - Updating a particular item from a deeply nested collection.
 
-More on the [Wiki](https://github.com/juliocachaydev/application.core.optics/wiki)
 
 ## Credits
 Author: Julio C. Cachay. Chattanooga, TN, USA.
