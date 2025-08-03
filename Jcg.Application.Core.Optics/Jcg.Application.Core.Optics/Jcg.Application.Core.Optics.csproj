@@ -1,8 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+    
     <PropertyGroup>
+        <PackageId>Jcg.Domain.Core</PackageId>
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
+        <Version>1.1.1</Version>
+        <Authors>Julio Cachay G.</Authors>
+        <Company>Julio Cachay Developer</Company>
+        <Description>A C# library that faciliates manipulating dtos using ideas taken from functional lenses.</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/juliocachaydev/application.core.optics/wiki</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/juliocachaydev/application.core.optics</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>lenses, lenses c-sharp, mapping, records</PackageTags>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Copyright>Copyright © 2025 Julio Cachay G.</Copyright>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeXmlDocumentation>true</IncludeXmlDocumentation>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath=""/>
+    </ItemGroup>
 </Project>
