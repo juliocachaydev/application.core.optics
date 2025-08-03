@@ -38,6 +38,10 @@ You can:
 
 There is no limit to the depth of the nested objects.
 
+## Installation
+Use the [NuGet Package](https://www.nuget.org/packages/Jcg.Application.Core.Optics)
+> dotnet add package Jcg.Application.Core.Optics --version 1.0.4
+
 ## Examples 
 ### Basic Example (single lens, no nesting)
 
