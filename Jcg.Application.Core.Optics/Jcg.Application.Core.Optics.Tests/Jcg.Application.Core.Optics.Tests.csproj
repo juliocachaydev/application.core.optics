@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Jcg.Application.Core.Optics\Jcg.Application.Core.Optics.csproj" />
+        <ProjectReference Include="..\Jcg.Application.Core.Optics\Jcg.Application.Core.Optics.csproj"/>
     </ItemGroup>
 
 </Project>

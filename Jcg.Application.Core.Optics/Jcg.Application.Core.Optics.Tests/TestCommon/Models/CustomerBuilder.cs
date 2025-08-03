@@ -3,7 +3,7 @@
 public class CustomerBuilder
 {
     private Customer _customer = Customer.Random;
-    
+
     public CustomerBuilder AddOrder(out Order order)
     {
         order = Order.Random;

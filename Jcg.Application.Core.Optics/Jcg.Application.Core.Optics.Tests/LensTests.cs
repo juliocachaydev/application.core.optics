@@ -20,11 +20,10 @@ public class LensTests
         customerNameLens.Value = "George";
 
         // ***** ASSERT *****
-        
-        Assert.Equal("George", customerNameLens.RootValue.CustomerName);
-        
-        Assert.Equal("George", customerNameLens.Value);
 
+        Assert.Equal("George", customerNameLens.RootObject.CustomerName);
+
+        Assert.Equal("George", customerNameLens.Value);
     }
 
     [Fact]
@@ -47,10 +46,9 @@ public class LensTests
         customerContactAddressStreetLens.Value = "Elm Street";
 
         // ***** ASSERT *****
-        
-        Assert.Equal("Elm Street", customerContactAddressStreetLens.RootValue.ContactInfo.Address.Street);
-        Assert.Equal("Elm Street", customerContactAddressStreetLens.Value);
 
+        Assert.Equal("Elm Street", customerContactAddressStreetLens.RootObject.ContactInfo.Address.Street);
+        Assert.Equal("Elm Street", customerContactAddressStreetLens.Value);
     }
 
     [Fact]
@@ -76,12 +74,11 @@ public class LensTests
                 Number = 11111,
                 Items = []
             });
-        
-        // ***** ASSERT *****
-        
-        Assert.Equal(3, customerOrdersLens.RootValue.Orders.Count());
-        Assert.Contains(customerOrdersLens.RootValue.Orders, o => o.Number == 11111);
 
+        // ***** ASSERT *****
+
+        Assert.Equal(3, customerOrdersLens.RootObject.Orders.Count());
+        Assert.Contains(customerOrdersLens.RootObject.Orders, o => o.Number == 11111);
     }
 
     [Fact]
@@ -101,14 +98,13 @@ public class LensTests
         // ***** ACT *****
 
         customerOrdersLens.RemoveWhenExists(o => o.OrderId == order1.OrderId);
-        
-        // ***** ASSERT *****
-        
-        Assert.Single(customerOrdersLens.RootValue.Orders);
-        Assert.Contains(customerOrdersLens.RootValue.Orders, o => o.OrderId == order2.OrderId);
 
+        // ***** ASSERT *****
+
+        Assert.Single(customerOrdersLens.RootObject.Orders);
+        Assert.Contains(customerOrdersLens.RootObject.Orders, o => o.OrderId == order2.OrderId);
     }
-    
+
     [Fact]
     public void CanUpdateItemFromNestedCollection()
     {
@@ -126,12 +122,11 @@ public class LensTests
         // ***** ACT *****
 
         customerOrdersLens.UpdateWhenExists(order => order.OrderId == order2.OrderId,
-            order => order with { Number = 12345});
-        
-        // ***** ASSERT *****
-        
-        Assert.Equal(12345, customerOrdersLens.RootValue.Orders.First(o=> o.OrderId == order2.OrderId).Number);
+            order => order with { Number = 12345 });
 
+        // ***** ASSERT *****
+
+        Assert.Equal(12345, customerOrdersLens.RootObject.Orders.First(o => o.OrderId == order2.OrderId).Number);
     }
 
     [Fact]
@@ -155,7 +150,7 @@ public class LensTests
                 (orderO, it) => orderO with { Items = it });
 
         // ***** ACT *****
-        
+
         customerOrderItemsLens.AddWhenDoesNotExists(item => item.ProductName == "Bolts",
             () => new OrderItem
             {
@@ -165,14 +160,13 @@ public class LensTests
             });
 
         // ***** ASSERT *****
-        
-        var resultingOrder = customerOrderItemsLens.RootValue.Orders.First(o => o.OrderId == order1.OrderId);
-        
+
+        var resultingOrder = customerOrderItemsLens.RootObject.Orders.First(o => o.OrderId == order1.OrderId);
+
         Assert.Equal(2, resultingOrder.Items.Count());
         Assert.Contains(resultingOrder.Items, i => i.ProductName == "Bolts");
-
     }
-    
+
     [Fact]
     public void CanRemoveItemFromDeeplyNestedCollection()
     {
@@ -194,17 +188,16 @@ public class LensTests
                 (orderO, it) => orderO with { Items = it });
 
         // ***** ACT *****
-        
+
         customerOrderItemsLens.RemoveWhenExists(item => item.ProductName == line1.ProductName);
 
         // ***** ASSERT *****
-        
-        var resultingOrder = customerOrderItemsLens.RootValue.Orders.First(o => o.OrderId == order1.OrderId);
-        
-        Assert.Empty(resultingOrder.Items);
 
+        var resultingOrder = customerOrderItemsLens.RootObject.Orders.First(o => o.OrderId == order1.OrderId);
+
+        Assert.Empty(resultingOrder.Items);
     }
-    
+
     [Fact]
     public void CanUpdateItemFromDeeplyNestedCollection()
     {
@@ -226,16 +219,15 @@ public class LensTests
                 (orderO, it) => orderO with { Items = it });
 
         // ***** ACT *****
-        
+
         customerOrderItemsLens.UpdateWhenExists(item => item.ProductName == line1.ProductName,
-            item => item with { ProductName = "Bolts"});
+            item => item with { ProductName = "Bolts" });
 
         // ***** ASSERT *****
-        
-        var resultingOrder = customerOrderItemsLens.RootValue.Orders.First(o => o.OrderId == order1.OrderId);
-        
+
+        var resultingOrder = customerOrderItemsLens.RootObject.Orders.First(o => o.OrderId == order1.OrderId);
+
         Assert.Single(resultingOrder.Items);
         Assert.Contains(resultingOrder.Items, i => i.ProductName == "Bolts");
-
     }
 }

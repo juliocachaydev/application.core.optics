@@ -14,9 +14,9 @@ public record Customer
     {
         CustomerId = Guid.NewGuid(),
         CustomerName = "Customer_" + Guid.NewGuid().ToString("N"),
-        ContactInfo = new()
+        ContactInfo = new ContactInfo
         {
-            Address = new()
+            Address = new Address
             {
                 Street = "Market Street"
             }
