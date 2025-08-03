@@ -1,5 +1,4 @@
 # Overview
-## ![Package Icon](icon.png) Jcg.Application.Core.Optics
 A C# Implementation of Functional Lenses, but adapted to Object-Oriented Programming.
 ## License
 MIT
