@@ -25,7 +25,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="../../README.MD" Pack="true" PackagePath=""/>
+        <None Include="C:\Users\jcach\Documents\repos\application.core.optics\README.md" Pack="true" PackagePath=""/>
         <None Include="icon.png" Pack="true" PackagePath=""/>
         <None Include="LICENSE" Pack="true" PackagePath=""/>
     </ItemGroup>
