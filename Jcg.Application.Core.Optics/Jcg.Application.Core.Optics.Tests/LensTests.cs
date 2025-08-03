@@ -47,6 +47,7 @@ public class LensTests
 
         // ***** ASSERT *****
 
+        // The updated object is always available in the RootObject property
         Assert.Equal("Elm Street", customerContactAddressStreetLens.RootObject.ContactInfo.Address.Street);
         Assert.Equal("Elm Street", customerContactAddressStreetLens.Value);
     }
